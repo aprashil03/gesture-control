@@ -1,5 +1,6 @@
 import mediapipe as mp
 import vectorCalc as vc
+import handle_gestures
 import cv2
 
 class Handle:
@@ -20,6 +21,7 @@ class Handle:
 
         self.video_source_index = video_source_index
         self.draw_points = draw_points
+        self.last_executed = None
 
         self.hands = self.mp_hands.Hands(
             static_image_mode,
@@ -73,6 +75,9 @@ class Handle:
 
                 finger_angles = vc.calcAngles(finger_pts, self.resolution)
 
-                print(finger_angles)
+                self.last_executed= handle_gestures.gesture_identifier(
+                    finger_angles,
+                    self.last_executed,
+                    )
 
 
