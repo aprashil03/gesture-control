@@ -1,8 +1,13 @@
 import mediapipe as mp
 import cv2
+import json
 import methods
 
-handObj = methods.Handle(video_source_index=0, draw_points=True)
+with open('config.json') as config:
+    configDict = json.load(config)
+
+
+handObj = methods.Handle(**configDict)
 cap = handObj.init_video()
 
 while cap.isOpened():

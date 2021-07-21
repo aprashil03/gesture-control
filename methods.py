@@ -12,22 +12,24 @@ class Handle:
         max_num_hands=1,
         min_det_conf=0.7,
         min_track_conf=0.7,
-        draw_points=False   
+        draw_points=False,  
+        scripts=True
     ):
 
 
         self.mp_hands = mp.solutions.hands
         self.mp_drawing = mp.solutions.drawing_utils
 
-        self.video_source_index = video_source_index
-        self.draw_points = draw_points
+        self.video_source_index = int(video_source_index)
+        self.draw_points = eval(draw_points)
         self.last_executed = None
+        self.scripts = eval(scripts)
 
         self.hands = self.mp_hands.Hands(
             static_image_mode,
-            max_num_hands,
-            min_det_conf,
-            min_track_conf
+            int(max_num_hands),
+            float(min_det_conf),
+            float(min_track_conf)
         )
 
 
@@ -74,10 +76,7 @@ class Handle:
                 finger_pts = [[base] + finger_pts[x:x+2] for x in range(0, 10, 2)]
 
                 finger_angles = vc.calcAngles(finger_pts, self.resolution)
-
-                self.last_executed= handle_gestures.gesture_identifier(
-                    finger_angles,
-                    self.last_executed,
-                    )
+                activated_fingers = handle_gestures.gesture_identifier(finger_angles)
+                self.last_executed = handle_gestures.gesture_handler(activated_fingers, self.last_executed, self.scripts)
 
 
