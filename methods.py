@@ -1,4 +1,5 @@
 import mediapipe as mp
+import vectorCalc as vc
 import cv2
 
 class Handle:
@@ -9,7 +10,7 @@ class Handle:
         static_image_mode=False,
         max_num_hands=1,
         min_det_conf=0.7,
-        min_track_conf=0.5,
+        min_track_conf=0.7,
         draw_points=False   
     ):
 
@@ -34,7 +35,9 @@ class Handle:
         _, image = cap.read()
         image_height, image_width, _ = image.shape
 
-        return ((image_width, image_height), cap)
+        self.resolution = (image_width, image_height)
+
+        return (cap)
 
     def process_image(self, image):
 
@@ -49,11 +52,27 @@ class Handle:
 
         return (image, results)
 
-    def render_points(self, image, results):
+    def process_positions(self, image, results):
         if results.multi_hand_landmarks:
             for hand_landmarks in results.multi_hand_landmarks:
-                self.mp_drawing.draw_landmarks(
-                        image, hand_landmarks, self.mp_hands.HAND_CONNECTIONS
-                )
+
+                if self.draw_points:
+                    self.mp_drawing.draw_landmarks(
+                            image, hand_landmarks, self.mp_hands.HAND_CONNECTIONS
+                    )
+
+                finger_pts = []
+
+                for id, lm in enumerate(hand_landmarks.landmark):
+                        if id not in [0,1,2,5,7,9,11,13,15,17,19]:
+                            finger_pts.append([id, lm.x, lm.y, lm.z])
+                        if id == 0:
+                            base = [id, lm.x, lm.y, lm.z]
+
+                finger_pts = [[base] + finger_pts[x:x+2] for x in range(0, 10, 2)]
+
+                finger_angles = vc.calcAngles(finger_pts, self.resolution)
+
+                print(finger_angles)
 
 

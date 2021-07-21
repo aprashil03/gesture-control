@@ -3,7 +3,7 @@ import cv2
 import methods
 
 handObj = methods.Handle(video_source_index=0, draw_points=True)
-resolution, cap = handObj.init_video()
+cap = handObj.init_video()
 
 while cap.isOpened():
     success, image = cap.read()
@@ -14,8 +14,7 @@ while cap.isOpened():
 
     image, results = handObj.process_image(image)
 
-    if handObj.draw_points:
-        handObj.render_points(image, results)
+    handObj.process_positions(image, results)
 
     cv2.imshow('Gesture Navigation', image)
 
