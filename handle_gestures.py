@@ -23,8 +23,11 @@ def gesture_handler(activated_fingers, last_executed):
         if last_executed == function:
             pass
         elif function in functions.keys():
-            print(functions, function)
-            print(f'import {functions[function]}')
+            try:
+                exec(f'import {functions[function]}')
+                exec(f'{functions[function]}.run()')
+            except SyntaxError:
+                print('Error: that gesture is not assigned')
 
 
     return function
